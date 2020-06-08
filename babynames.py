@@ -30,6 +30,8 @@ Suggested milestones for incremental development:
  - Build the [year, 'name rank', ... ] list and print it
  - Fix main() to use the extracted_names list
 """
+# give credits
+__author__ = "Ruben Espino and I got help from Paul Racisz and Chris Warren"
 
 import sys
 import re
@@ -43,8 +45,26 @@ def extract_names(filename):
     the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
-    names = []
-    # +++your code here+++
+    year = filename[4:8]
+    names_dict = {}
+    with open(filename, 'r') as textfile:
+        matches = re.findall(
+            r"<td>(.*?)</td><td>(.*?)</td><td>(.*?)</td>", "\n".join(textfile))
+        #loop over list of tuples
+        for match in matches:
+            #i[0] is equal to the rank
+            #i[1] is the boy name
+            #i[2] is the girl name
+            if match[1] not in names_dict:
+                #puts in dict as key value pair
+                names_dict[match[1]] = match[0]
+            if match[2] not in names_dict:
+                names_dict[match[2]] = match[0]
+        names_sorted_list = sorted(names_dict.keys())
+        names = [year]
+        for key in names_sorted_list:
+            names.append(key + " " + names_dict[key])
+            
     return names
 
 
@@ -81,9 +101,15 @@ def main(args):
     # Format the resulting list as a vertical list (separated by newline \n).
     # Use the create_summary flag to decide whether to print the list
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
-
-    # +++your code here+++
-
+    for file_name in file_list:
+        get_names = extract_names(file_name)
+        get_names = "\n".join(get_names)
+        if not create_summary:
+            print(get_names)
+        else:
+            new_file = file_name + ".summary"
+            files = open(new_file, 'w')
+            files.write(str(get_names))
 
 if __name__ == '__main__':
     main(sys.argv[1:])
